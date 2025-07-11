@@ -4,10 +4,10 @@
   <meta charset="UTF-8">
   <title>Azure NER Demo</title>
   <style>
-    body { font-family: Arial, sans-serif; padding: 20px; }
+    body { font-family: Arial, sans-serif; padding: 20px; max-width: 700px; margin: auto; }
     textarea { width: 100%; height: 100px; margin-bottom: 10px; }
     button { padding: 10px 20px; }
-    pre { background: #f4f4f4; padding: 10px; border-radius: 4px; }
+    pre { background: #f4f4f4; padding: 10px; border-radius: 4px; white-space: pre-wrap; }
   </style>
 </head>
 <body>
@@ -23,13 +23,17 @@
 <script>
   async function analyzeText() {
     const text = document.getElementById("inputText").value;
-    
-    const endpoint = "https://languageazz.cognitiveservices.azure.com/"; // e.g., https://your-resource.cognitiveservices.azure.com/
-    const key = "FGWvstNQRomUZikoE4ZGbXxRfGkfnURaHwki5AngrfbDL559u1qbJQQJ99BGACHYHv6XJ3w3AAAaACOGwJ6J";
 
-    const url = const url = `${endpoint}/text/analytics/v3.2/entities/recognition/general`;
+    // Replace these with your actual values
+    const endpoint = "https://languageazz.cognitiveservices.azure.com/";
+    const key = "FGWvstNQRomUZikoE4ZGbXxRfGkfnURaHwki5AngrfbDL559u1qbJQQJ99BGACHYHv6XJ3w3AAAaACOGwJ6J";
+    const region = "eastus2"; // use your actual region
+
+    const url = `${endpoint}/text/analytics/v3.2/entities/recognition/general`;
+
     const headers = {
       "Ocp-Apim-Subscription-Key": key,
+      "Ocp-Apim-Subscription-Region": region,
       "Content-Type": "application/json"
     };
 
@@ -39,6 +43,8 @@
       ]
     };
 
+    document.getElementById("result").textContent = "Analyzing...";
+
     try {
       const response = await fetch(url, {
         method: "POST",
@@ -46,16 +52,20 @@
         body: JSON.stringify(body)
       });
 
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
       const data = await response.json();
       const entities = data.documents[0].entities;
-      let output = entities.map(e => 
-        `- ${e.text} (${e.category}) — confidence: ${e.confidenceScore.toFixed(2)}`
-      ).join('\n');
+      let output = entities.length
+        ? entities.map(e => `- ${e.text} (${e.category}) — confidence: ${e.confidenceScore.toFixed(2)}`).join('\n')
+        : "No entities found.";
 
-      document.getElementById("result").textContent = output || "No entities found.";
+      document.getElementById("result").textContent = output;
     } catch (err) {
       console.error(err);
-      document.getElementById("result").textContent = "Error analyzing text.";
+      document.getElementById("result").textContent = "❌ Error analyzing text. See console.";
     }
   }
 </script>

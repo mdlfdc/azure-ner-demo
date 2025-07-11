@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Azure Translator Web Demo</title>
+  <title>Azure Translator – Web Demo</title>
   <style>
     body { font-family: Arial, sans-serif; padding: 20px; max-width: 800px; margin: auto; }
     textarea, select, button { width: 100%; margin-top: 10px; padding: 8px; }
@@ -11,9 +11,9 @@
 </head>
 <body>
 
-<h2>Azure Translator – Translate to Japanese</h2>
+<h2>Azure Translator – Translate with Language Picker</h2>
 
-<label for="inputText">Enter English Text:</label>
+<label for="inputText">Enter Text:</label>
 <textarea id="inputText">Hello! How are you?</textarea>
 
 <label for="targetLang">Translate To:</label>
@@ -27,30 +27,31 @@
 
 <button onclick="translate()">Translate</button>
 
-<h3>Translated Text:</h3>
+<h3>Translation Result:</h3>
 <pre id="result">Waiting for input...</pre>
 
 <script>
 async function translate() {
-  const input = document.getElementById("inputText").value;
+  const inputText = document.getElementById("inputText").value;
   const toLang = document.getElementById("targetLang").value;
 
-  const endpoint = "https://api.cognitive.microsofttranslator.com/translate";
+  const endpoint = "https://api.cognitive.microsofttranslator.com/";
+  const path = "translate";
   const params = `?api-version=3.0&to=${toLang}`;
-  const url = endpoint + params;
+  const url = endpoint + path + params;
 
-  const key = "DRmbAskqmsRCfb3QEaap3iAohfjgF5wEFOc9mYFpsxuhqHNHjor0JQQJ99BGACHYHv6XJ3w3AAAbACOGyqSg";
+  const apiKey = "DRmbAskqmsRCfb3QEaap3iAohfjgF5wEFOc9mYFpsxuhqHNHjor0JQQJ99BGACHYHv6XJ3w3AAAbACOGyqSg";
   const region = "eastus2";
 
   const headers = {
-    "Ocp-Apim-Subscription-Key": key,
+    "Ocp-Apim-Subscription-Key": apiKey,
     "Ocp-Apim-Subscription-Region": region,
     "Content-Type": "application/json"
   };
 
-  const body = JSON.stringify([{ text: input }]);
+  const body = JSON.stringify([{ text: inputText }]);
 
-  document.getElementById("result").textContent = "Translating...";
+  document.getElementById("result").textContent = "⏳ Translating...";
 
   try {
     const response = await fetch(url, {
@@ -60,15 +61,18 @@ async function translate() {
     });
 
     const data = await response.json();
+    console.log("Full response:", data); // For debugging
 
-    const translated = data[0]?.translations[0]?.text;
+    const translated = data[0]?.translations?.[0]?.text;
+
     if (translated) {
       document.getElementById("result").textContent = translated;
     } else {
-      document.getElementById("result").textContent = "Translation failed.";
+      document.getElementById("result").textContent = "⚠️ No translation returned.";
     }
+
   } catch (error) {
-    console.error(error);
+    console.error("Error:", error);
     document.getElementById("result").textContent = "❌ Error calling Translator API.";
   }
 }

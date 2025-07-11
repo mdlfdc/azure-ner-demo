@@ -2,19 +2,6 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Azure Translator – Detect & Translate</title>
-  <style>
-    body { font-family: Arial, sans-serif; padding: 20px; max-width: 700px; margin: auto; }
-    textarea, select, button { width: 100%; margin-top: 10px; padding: 8px; }
-    pre { background: #f4f4f4; padding: 10px; border-radius: 4px; white-space: pre-wrap; margin-top: 20px; }
-  </style>
-</head>
-<body>
-
-<h2>Azure Translator – Language Detection & Translation</h2><!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
   <title>Azure Translator Web Demo</title>
   <style>
     body { font-family: Arial, sans-serif; padding: 20px; max-width: 800px; margin: auto; }
@@ -80,71 +67,6 @@ async function translate() {
     } else {
       document.getElementById("result").textContent = "Translation failed.";
     }
-  } catch (error) {
-    console.error(error);
-    document.getElementById("result").textContent = "❌ Error calling Translator API.";
-  }
-}
-</script>
-
-</body>
-</html>
-
-
-<label for="inputText">Enter Text:</label>
-<textarea id="inputText">Bonjour, comment allez-vous ?</textarea>
-
-<label for="targetLang">Translate To:</label>
-<select id="targetLang">
-  <option value="en">English</option>
-  <option value="tl">Tagalog</option>
-  <option value="ja">Japanese</option>
-  <option value="es">Spanish</option>
-  <option value="fr">French</option>
-</select>
-
-<button onclick="translateText()">Detect & Translate</button>
-
-<h3>Output:</h3>
-<pre id="result">Waiting for input...</pre>
-
-<script>
-async function translateText() {
-  const input = document.getElementById("inputText").value;
-  const toLang = document.getElementById("targetLang").value;
-
-  const baseUrl = "https://api.cognitive.microsofttranslator.com/translate";
-  const params = `?api-version=3.0&to=${toLang}`;
-  const endpoint = baseUrl + params;
-
-  // ⚠️ Use your actual key and region
-  const apiKey = "DRmbAskqmsRCfb3QEaap3iAohfjgF5wEF0c9mYFpsxuhqHNHjor0JQQJ99BGACHYHv6XJ3w3AAAbACOGyqSg";
-  const region = "eastus2";
-
-  const headers = {
-    "Ocp-Apim-Subscription-Key": apiKey,
-    "Ocp-Apim-Subscription-Region": region,
-    "Content-Type": "application/json"
-  };
-
-  const body = JSON.stringify([{ Text: input }]);
-
-  document.getElementById("result").textContent = "Processing...";
-
-  try {
-    const response = await fetch(endpoint, {
-      method: "POST",
-      headers: headers,
-      body: body
-    });
-
-    const data = await response.json();
-
-    const detected = data[0]?.detectedLanguage?.language || "und";
-    const translatedText = data[0]?.translations?.[0]?.text || "No translation found.";
-
-    document.getElementById("result").textContent =
-      `Detected Language: ${detected}\n\nTranslated Text:\n${translatedText}`;
   } catch (error) {
     console.error(error);
     document.getElementById("result").textContent = "❌ Error calling Translator API.";
